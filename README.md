@@ -1,2 +1,2 @@
 # ChatApp
-A chat app fora university project.
+A chat app for a university group project.
