@@ -2,6 +2,7 @@ package uk.ac.livjm.cms;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -12,17 +13,20 @@ import javax.swing.JTextArea;
 
 public class Chat extends JFrame implements ActionListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JButton sendButton;
 	private JButton closeButton;
-	private JTextArea historyText;
 	private JTextArea messageText;
-
+	private JTextArea historyText;
 	private Server server;
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == closeButton) {
-			// terminate
+			// Close the program
 			System.exit(0);
 		}
 		if (e.getSource() == sendButton) {
@@ -31,19 +35,19 @@ public class Chat extends JFrame implements ActionListener {
 			historyText.append("Me:\t" + text + "\n");
 			messageText.setText("");
 		}
-
 	}
 
 	public static void main(String[] args) {
+
 		JFrame frame = new Chat();
 		frame.setVisible(true);
 	}
 
 	public Chat() {
-
-		setTitle("Chat Window - Server");
-		setSize(1280, 720);
+		setTitle("Chatter v1.1 - Server");
+		setSize(600, 800);
 		setLocation(60, 40);
+		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icon.png")));
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
 		this.setLayout(new GridBagLayout());
@@ -55,7 +59,7 @@ public class Chat extends JFrame implements ActionListener {
 		constraints.gridy = 0;
 		constraints.weightx = 1.0;
 		constraints.weighty = 0.0;
-		constraints.gridwidth = 4;
+		constraints.gridwidth = 3;
 		constraints.anchor = GridBagConstraints.FIRST_LINE_START;
 		add(new JLabel("History"), constraints);
 
@@ -93,7 +97,7 @@ public class Chat extends JFrame implements ActionListener {
 
 		// Add history
 		constraints = new GridBagConstraints();
-		historyText = new JTextArea("");
+		historyText = new JTextArea("Welcome to Chatter version 1.1!\n Please use the close button to close the chat application.\n");
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		constraints.weightx = 1.0;
@@ -101,6 +105,7 @@ public class Chat extends JFrame implements ActionListener {
 		constraints.ipady = 400;
 		constraints.gridwidth = 3;
 		constraints.fill = GridBagConstraints.BOTH;
+		historyText.setEditable(false);
 		add(historyText, constraints);
 
 		// Send message text
@@ -115,14 +120,17 @@ public class Chat extends JFrame implements ActionListener {
 
 		closeButton.addActionListener(this);
 		sendButton.addActionListener(this);
+		historyText.setLineWrap(true);
+		messageText.setLineWrap(true);
+		historyText.setWrapStyleWord(true);
+		messageText.setWrapStyleWord(true);
 
 		server = new Server(this, 7047);
 		Thread thread = new Thread(server);
 		thread.start();
-
 	}
 
-	void setReceivedText(String text) {
-		historyText.append("You:\t" + text + "\n");
+	void setRecievedText(String text) {
+		historyText.append("User:\t" + text + "\n");
 	}
 }
