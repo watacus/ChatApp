@@ -1,2 +1,2 @@
-# ChatApp
-A chat app for a university group project.
+# Chatter
+A networked chat app for a university group project.
