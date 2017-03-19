@@ -5,55 +5,46 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-import javax.net.ssl.SSLServerSocket;
-import javax.net.ssl.SSLServerSocketFactory;
-import javax.net.ssl.SSLSocket;
+
 
 public class Server implements Runnable {
 	private int port = 7047;
 	private boolean running = false;
-	private Connection connection;
+	private Connection conn;
 	private Chat frame;
 
-	public Server(Chat frame, int port) {
+	public Server (Chat frame, int port) {
 		this.frame = frame;
 		this.port = port;
 	}
 
-	public void stop() {
+	public void stop () {
 		running = false;
 	}
 
-	public Connection getConnection() {
-		return connection;
+	public Connection getConnection () {
+		return conn;
 	}
 
 	@Override
 	public void run() {
 		try {
-			//Try connection
-			SSLServerSocketFactory sslServerSocketFactory = (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();
-			SSLServerSocket listener = (SSLServerSocket) sslServerSocketFactory.createServerSocket(port);
-			SSLSocket server;
-			server = (SSLSocket) listener.accept();
+			ServerSocket listener = new ServerSocket(port);
+			Socket server;
+			
 			running = true;
-
 			while (running) {
-				try {
 					// Listen for incoming connections
-					server = (SSLSocket) listener.accept();
-
-					//New connection, thread creation
-					connection = new Connection(frame, server.getInputStream(), server.getOutputStream());
-					Thread thread = new Thread(connection);
+					server = listener.accept();
+					
+					// We've received a new connection, so create a new thread to communicate across it
+					conn = new Connection (frame, server.getInputStream(), server.getOutputStream());
+					Thread thread =  new Thread (conn);
 					thread.start();
-
-				} catch (SocketTimeoutException e) {
-					// Do nothing on timeout
+					}	
+		}catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
-}
+
