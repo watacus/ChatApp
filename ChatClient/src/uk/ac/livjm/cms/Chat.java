@@ -1,10 +1,14 @@
 package uk.ac.livjm.cms;
 
+import java.awt.Desktop;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -50,7 +54,7 @@ public class Chat extends JFrame implements ActionListener {
 	}
 
 	public Chat() {
-		setTitle("Chatter v1.1 - Client");
+		setTitle("Chatter v1.2 - Client");
 		setSize(600, 800);
 		setLocation(60, 40);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icon.png")));
@@ -103,7 +107,8 @@ public class Chat extends JFrame implements ActionListener {
 
 		// add history
 		constraints = new GridBagConstraints();
-		historyText = new JTextArea("Welcome to Chatter version 1.1!\n Please use the close button to close the chat application.\n");
+		historyText = new JTextArea(
+				"Welcome to Chatter version 1.1!\n Please use the close button to close the chat application.\n");
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		constraints.weightx = 1.0;
@@ -144,7 +149,13 @@ public class Chat extends JFrame implements ActionListener {
 		messageText.setWrapStyleWord(true);
 	}
 
-	void setRecievedText(String text) {
+	void setRecievedText(String text) throws IOException, URISyntaxException {
 		historyText.append("User:\t" + text + "\n");
+
+		String checking = text;
+		String checked = checking.replaceAll("http://.+?(com|net|org)/{0,1}", "<a href=\"$0\">$0</a>");
+		if(Desktop.isDesktopSupported()){
+			Desktop.getDesktop().browse(new URI(checked));
+		}
 	}
 }

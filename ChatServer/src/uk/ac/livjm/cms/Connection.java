@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 
 import javax.swing.JOptionPane;
 
@@ -32,7 +33,12 @@ public class Connection implements Runnable {
 		while (running) {
 			try {
 				String line = inRead.readLine();
-				frame.setRecievedText(line);
+				try {
+					frame.setRecievedText(line);
+				} catch (URISyntaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog(frame, e.getMessage());
 			}
