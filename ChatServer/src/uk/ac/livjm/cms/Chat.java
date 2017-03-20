@@ -101,7 +101,7 @@ public class Chat extends JFrame implements ActionListener {
 		// Add history
 		constraints = new GridBagConstraints();
 		historyText = new JTextArea(
-				"Welcome to Chatter version 1.1!\n Please use the close button to close the chat application.\n");
+				"Welcome to Chatter version 1.2!\n Please use the close button to close the chat application.\n");
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		constraints.weightx = 1.0;
