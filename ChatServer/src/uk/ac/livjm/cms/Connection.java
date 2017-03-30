@@ -6,8 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 
-import javax.swing.JOptionPane;
 
 public class Connection implements Runnable {
 	private InputStream in;
@@ -28,35 +28,21 @@ public class Connection implements Runnable {
 	@Override
 	public void run() {
 		running = true;
-
 		BufferedReader inRead = new BufferedReader (new InputStreamReader (in));
 		while (running) {
 			try {
-				// Try to read a line
 				String line = inRead.readLine();
-				if (line != null) {
-					// We received some text, so send it to the window
-					frame.setRecievedText(line);
-				}
-				else {
-					// We received nothing because the connection was closed
-					JOptionPane.showMessageDialog(frame, "Connection closed");
-					running = false;
-				}
+				frame.setRecievedText(line);
 			} catch (IOException e) {
-				// Some kind of error occurred
-				JOptionPane.showMessageDialog(frame, e.getMessage());
-				running = false;
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
 
 	public void sendLine (String text) {
-		PrintWriter outRead = new PrintWriter (out, true);
-		if (running) {
-			// Send a line of text across the network
-			outRead.println(text);
+		PrintWriter outRead = new PrintWriter (out,true);
+		outRead.println(text);
 		}
 	}
-
-}
