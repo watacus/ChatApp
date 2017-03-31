@@ -3,9 +3,6 @@ package uk.ac.livjm.cms;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
-
-
 
 public class Server implements Runnable {
 	private int port = 7047;

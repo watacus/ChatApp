@@ -6,11 +6,13 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
@@ -27,6 +29,7 @@ public class Chat extends JFrame implements ActionListener {
 	private JTextArea historyText;
 	private JButton connectButton;
 	private Client client;
+	private JCheckBox urlCheckBox;
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -54,7 +57,7 @@ public class Chat extends JFrame implements ActionListener {
 	}
 
 	public Chat() {
-		setTitle("Chatter v1.2 - Client");
+		setTitle("Chatter v1.4 - Client");
 		setSize(600, 800);
 		setLocation(60, 40);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icon.png")));
@@ -107,7 +110,7 @@ public class Chat extends JFrame implements ActionListener {
 
 		// add history
 		constraints = new GridBagConstraints();
-		historyText = new JTextArea("Welcome to Chatter version 1.2!\n Please use the close button to close the chat application.\n");
+		historyText = new JTextArea("Welcome to Chatter version 1.4!\n Please use the close button to close the chat application.\n");
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		constraints.weightx = 1.0;
@@ -138,6 +141,16 @@ public class Chat extends JFrame implements ActionListener {
 		constraints.gridwidth = 1;
 		constraints.anchor = GridBagConstraints.FIRST_LINE_START;
 		add(connectButton, constraints);
+		
+		// Adds checkbox for automatically opening URLs
+		constraints = new GridBagConstraints();
+		urlCheckBox = new JCheckBox("Auto open URLs sent in chat");
+		constraints.gridx = 2;
+		constraints.gridy = 5;
+		constraints.weightx = 0.0;
+		constraints.weighty = 0.0;
+		constraints.anchor = GridBagConstraints.FIRST_LINE_END;
+		add(urlCheckBox, constraints);
 
 		closeButton.addActionListener(this);
 		connectButton.addActionListener(this);
@@ -146,15 +159,18 @@ public class Chat extends JFrame implements ActionListener {
 		messageText.setLineWrap(true);
 		historyText.setWrapStyleWord(true);
 		messageText.setWrapStyleWord(true);
+		sendButton.setMnemonic(KeyEvent.VK_ENTER);
 	}
 
 	void setRecievedText(String text) throws IOException, URISyntaxException {
 		historyText.append("User:\t" + text + "\n");
 
+		if(urlCheckBox.isSelected()) {
 		String checking = text;
 		String checked = checking.replaceAll("http://.+?(com|net|org)/{0,1}", "<a href=\"$0\">$0</a>");
 		if(Desktop.isDesktopSupported()){
 			Desktop.getDesktop().browse(new URI(checked));
 		}
+	}
 	}
 }

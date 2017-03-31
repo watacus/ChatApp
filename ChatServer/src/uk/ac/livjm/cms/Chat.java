@@ -6,11 +6,13 @@ import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -32,6 +34,8 @@ public class Chat extends JFrame implements ActionListener {
 	private JCheckBox urlCheckBox;
 	private JCheckBox saveCheckBox;
 
+	private FileHandler logHandler;
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == closeButton) {
@@ -44,25 +48,25 @@ public class Chat extends JFrame implements ActionListener {
 			historyText.append("Me:\t" + text + "\n");
 			messageText.setText("");
 
-			try {
-				BufferedWriter logWriter = new BufferedWriter(new FileWriter("log.txt", true));
-				logWriter.newLine();
-				logWriter.write("Me:\t" + text + "\n");
-				logWriter.close();
-			} catch (Exception f) {
-
+			if (saveCheckBox.isSelected()) {
+				try {
+					LogRecord record = new LogRecord(Level.INFO, "Me:\t" + text);
+					logHandler.publish(record);
+				} catch (Exception f) {
+				
+				}
 			}
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
 		JFrame frame = new Chat();
 		frame.setVisible(true);
 	}
 
-	public Chat() {
-		setTitle("Chatter v1.2 - Server");
+	public Chat() throws IOException {
+		setTitle("Chatter v1.4 - Server");
 		setSize(600, 800);
 		setLocation(60, 40);
 		setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("icon.png")));
@@ -116,7 +120,7 @@ public class Chat extends JFrame implements ActionListener {
 		// Add history
 		constraints = new GridBagConstraints();
 		historyText = new JTextArea(
-				"Welcome to Chatter version 1.2!\n Please use the close button to close the chat application.\n");
+				"Welcome to Chatter version 1.4!\n Please use the close button to close the chat application.\n");
 		constraints.gridx = 0;
 		constraints.gridy = 1;
 		constraints.weightx = 1.0;
@@ -136,8 +140,8 @@ public class Chat extends JFrame implements ActionListener {
 		constraints.weighty = 0.0;
 		constraints.anchor = GridBagConstraints.FIRST_LINE_END;
 		add(urlCheckBox, constraints);
-		
-		//Adds checkbox for text saving checkbox
+
+		// Adds checkbox for text saving checkbox
 		constraints = new GridBagConstraints();
 		saveCheckBox = new JCheckBox("Save chat history to .txt file");
 		constraints.gridx = 2;
@@ -146,7 +150,7 @@ public class Chat extends JFrame implements ActionListener {
 		constraints.weighty = 0.0;
 		constraints.anchor = GridBagConstraints.FIRST_LINE_START;
 		add(saveCheckBox, constraints);
-		
+
 		// Send message text
 		constraints = new GridBagConstraints();
 		constraints.gridx = 0;
@@ -163,8 +167,13 @@ public class Chat extends JFrame implements ActionListener {
 		messageText.setLineWrap(true);
 		historyText.setWrapStyleWord(true);
 		messageText.setWrapStyleWord(true);
-		urlCheckBox.setSelected(true);
-		saveCheckBox.setSelected(true);
+		urlCheckBox.setSelected(false);
+		saveCheckBox.setSelected(false);
+		sendButton.setMnemonic(KeyEvent.VK_ENTER);
+
+		// Initialise the file handler.
+		logHandler = new FileHandler("log", 4096, 5);
+		logHandler.setLevel(Level.INFO);
 		
 		server = new Server(this, 7047);
 		Thread thread = new Thread(server);
@@ -173,17 +182,13 @@ public class Chat extends JFrame implements ActionListener {
 
 	void setRecievedText(String text) throws IOException, URISyntaxException {
 
-		try {
-			BufferedWriter logWriter = new BufferedWriter(new FileWriter("log.txt", true)); // Writes received text to .txt file
-			logWriter.newLine();
-			logWriter.write("User:\t" + text + "\n");
-			logWriter.close();
-		} catch (IOException e) {
-
+		if (saveCheckBox.isSelected()) {
+			LogRecord record = new LogRecord(Level.INFO, "User:\t" + text);
+			logHandler.publish(record);
 		}
 		historyText.append("User:\t" + text + "\n");
 
-		if (urlCheckBox.isSelected()) { //Checks state of urlButton JCheckBox and runs code if it is selected
+		if (urlCheckBox.isSelected()) { //Checks state of urlCheckBox, runs if box is checked 
 			String checking = text;
 			String checked = checking.replaceAll("http://.+?(com|net|org)/{0,1}", "<a href=\"$0\">$0</a>");
 			if (Desktop.isDesktopSupported()) {

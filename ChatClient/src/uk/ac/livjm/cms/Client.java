@@ -9,28 +9,28 @@ public class Client implements Runnable {
 	private int port = 7047;
 	private Connection conn;
 	private Chat frame;
-	
-	public Client (Chat frame, String host, int port) {
+
+	public Client(Chat frame, String host, int port) {
 		this.frame = frame;
 		this.host = host;
 		this.port = port;
 	}
 
-	public Connection getConnection () {
+	public Connection getConnection() {
 		return conn;
 	}
 
 	@Override
 	public void run() {
 		try {
-			socket = new Socket (host, port);
-			
-			conn = new Connection (frame, socket.getInputStream(), socket.getOutputStream());
-			Thread thread = new Thread (conn);
+			socket = new Socket(host, port);
+
+			conn = new Connection(frame, socket.getInputStream(), socket.getOutputStream());
+			Thread thread = new Thread(conn);
 			thread.start();
-		  } catch (Exception e) {
-			JOptionPane.showMessageDialog(frame, e.getMessage()); 
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(frame, e.getMessage());
 			conn = null;
-		  }
-		  }
+		}
+	}
 }

@@ -8,27 +8,26 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 
-
 public class Connection implements Runnable {
 	private InputStream in;
 	private OutputStream out;
 	private boolean running = false;
 	private Chat frame;
 
-	public Connection (Chat frame, InputStream in, OutputStream out) {
+	public Connection(Chat frame, InputStream in, OutputStream out) {
 		this.frame = frame;
 		this.in = in;
 		this.out = out;
 	}
 
-	void stop () {
+	void stop() {
 		this.running = false;
 	}
-	
+
 	@Override
 	public void run() {
 		running = true;
-		BufferedReader inRead = new BufferedReader (new InputStreamReader (in));
+		BufferedReader inRead = new BufferedReader(new InputStreamReader(in));
 		while (running) {
 			try {
 				String line = inRead.readLine();
@@ -41,8 +40,8 @@ public class Connection implements Runnable {
 		}
 	}
 
-	public void sendLine (String text) {
-		PrintWriter outRead = new PrintWriter (out,true);
+	public void sendLine(String text) {
+		PrintWriter outRead = new PrintWriter(out, true);
 		outRead.println(text);
-		}
 	}
+}
